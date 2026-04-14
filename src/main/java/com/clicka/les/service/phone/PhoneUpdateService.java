@@ -5,7 +5,6 @@ import com.clicka.les.entity.Phone;
 import com.clicka.les.repository.user.PhoneRepository;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -16,12 +15,14 @@ public class PhoneUpdateService {
 
     private final PhoneRepository phoneRepository;
 
-    public PhoneListDTO execute(UUID phoneId, PhoneCreateDTO dto) {
+    public PhoneListDTO execute(UUID userId, UUID phoneId, PhoneCreateDTO dto) {
 
         Phone phone = phoneRepository.findById(phoneId)
                 .orElseThrow(() -> new RuntimeException("Telefone não encontrado"));
 
-        UUID userId = phone.getUser().getId();
+        if (!phone.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Telefone não pertence ao usuário");
+        }
 
         if (!phone.getNickname().equals(dto.getNickname()) &&
                 phoneRepository.existsByUserIdAndNickname(userId, dto.getNickname())) {
@@ -33,10 +34,6 @@ public class PhoneUpdateService {
 
         phoneRepository.save(phone);
 
-        return toDTO(phone);
-    }
-
-    private PhoneListDTO toDTO(Phone phone) {
         return PhoneListDTO.builder()
                 .id(phone.getId())
                 .number(phone.getNumber())

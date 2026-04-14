@@ -5,7 +5,6 @@ import com.clicka.les.entity.Card;
 import com.clicka.les.repository.user.CardRepository;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -16,12 +15,14 @@ public class CardUpdateService {
 
     private final CardRepository cardRepository;
 
-    public CardListDTO execute(UUID cardId, CardCreateDTO dto) {
+    public CardListDTO execute(UUID userId, UUID cardId, CardCreateDTO dto) {
 
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new RuntimeException("Cartão não encontrado"));
 
-        UUID userId = card.getUser().getId();
+        if (!card.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Cartão não pertence ao usuário");
+        }
 
         if (!card.getNickname().equals(dto.getNickname()) &&
                 cardRepository.existsByUserIdAndNickname(userId, dto.getNickname())) {
@@ -35,10 +36,6 @@ public class CardUpdateService {
 
         cardRepository.save(card);
 
-        return toListDTO(card);
-    }
-
-    private CardListDTO toListDTO(Card card) {
         return CardListDTO.builder()
                 .id(card.getId())
                 .cardNumber(card.getCardNumber())

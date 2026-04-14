@@ -16,19 +16,19 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CardUpdateController {
 
-    private final CardUpdateService cardUpdateService;
-
-    @PutMapping("/{cardId}")
-    public ResponseEntity<?> update(
-            @PathVariable UUID cardId,
-            @RequestBody @Valid CardCreateDTO dto
-    ) {
-        try {
-            return ResponseEntity.ok(
-                    cardUpdateService.execute(cardId, dto)
-            );
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+//    private final CardUpdateService cardUpdateService;
+//
+//    @PutMapping("/{cardId}")
+//    public ResponseEntity<?> update(
+//            @PathVariable UUID cardId,
+//            @RequestBody @Valid CardCreateDTO dto
+//    ) {
+//        try {
+//            return ResponseEntity.ok(
+//                    cardUpdateService.execute(cardId, dto)
+//            );
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
 }

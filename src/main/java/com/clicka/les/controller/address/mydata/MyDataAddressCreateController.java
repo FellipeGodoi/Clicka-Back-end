@@ -1,4 +1,4 @@
-package com.clicka.les.controller.address;
+package com.clicka.les.controller.address.mydata;
 
 import com.clicka.les.dto.address.*;
 import com.clicka.les.service.address.AddressCreateService;

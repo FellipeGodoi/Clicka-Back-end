@@ -1,4 +1,4 @@
-package com.clicka.les.controller.user;
+package com.clicka.les.controller.user.mydata;
 
 import com.clicka.les.dto.user.*;
 import com.clicka.les.service.user.UserUpdateService;
@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -19,15 +20,16 @@ public class UserUpdateController {
     private final UserUpdateService userUpdateService;
 
     @PutMapping
-    public ResponseEntity<?> update(
-            @RequestParam UUID id,
-            @RequestBody @Valid UserCreateDTO dto
+    public ResponseEntity<UserDetailResponseDTO> update(
+            Authentication authentication,
+            @RequestBody @Valid UserUpdateDTO dto
     ) {
-        try {
-            UserDetailResponseDTO response = userUpdateService.execute(id, dto);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+
+        UUID userId = UUID.fromString(authentication.getName());
+
+        UserDetailResponseDTO response =
+                userUpdateService.execute(userId, dto);
+
+        return ResponseEntity.ok(response);
     }
 }

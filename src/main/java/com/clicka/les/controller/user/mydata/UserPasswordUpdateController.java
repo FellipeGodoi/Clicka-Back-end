@@ -1,4 +1,4 @@
-package com.clicka.les.controller.user;
+package com.clicka.les.controller.user.mydata;
 
 import java.util.UUID;
 

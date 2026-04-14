@@ -16,19 +16,19 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AddressUpdateController {
 
-    private final AddressUpdateService addressUpdateService;
-
-    @PutMapping("/{addressId}")
-    public ResponseEntity<?> update(
-            @PathVariable UUID addressId,
-            @RequestBody @Valid AddressCreateDTO dto
-    ) {
-        try {
-            return ResponseEntity.ok(
-                    addressUpdateService.execute(addressId, dto)
-            );
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+//    private final AddressUpdateService addressUpdateService;
+//
+//    @PutMapping("/{addressId}")
+//    public ResponseEntity<?> update(
+//            @PathVariable UUID addressId,
+//            @RequestBody @Valid AddressCreateDTO dto
+//    ) {
+//        try {
+//            return ResponseEntity.ok(
+//                    addressUpdateService.execute(addressId, dto)
+//            );
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
 }

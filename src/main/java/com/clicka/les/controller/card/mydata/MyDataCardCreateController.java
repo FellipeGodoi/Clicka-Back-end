@@ -1,4 +1,4 @@
-package com.clicka.les.controller.card;
+package com.clicka.les.controller.card.mydata;
 
 import com.clicka.les.dto.card.*;
 import com.clicka.les.service.card.CardCreateService;

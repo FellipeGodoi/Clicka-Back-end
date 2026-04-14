@@ -16,7 +16,7 @@ public class UserUpdateService {
 
     private final UserRepository userRepository;
 
-    public UserDetailResponseDTO execute(UUID id, UserCreateDTO dto) {
+    public UserDetailResponseDTO execute(UUID id, UserUpdateDTO dto) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
@@ -34,7 +34,6 @@ public class UserUpdateService {
         user.setName(dto.getName());
         user.setCpf(dto.getCpf());
         user.setEmail(dto.getEmail());
-        user.setIsActive(dto.getIsActive());
 
         userRepository.save(user);
 

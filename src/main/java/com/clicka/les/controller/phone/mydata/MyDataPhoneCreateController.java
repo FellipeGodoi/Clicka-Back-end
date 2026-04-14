@@ -1,4 +1,4 @@
-package com.clicka.les.controller.phone;
+package com.clicka.les.controller.phone.mydata;
 
 import com.clicka.les.dto.phone.*;
 import com.clicka.les.entity.User;

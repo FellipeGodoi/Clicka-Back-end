@@ -5,7 +5,6 @@ import com.clicka.les.entity.Address;
 import com.clicka.les.repository.user.AddressRepository;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -16,12 +15,14 @@ public class AddressUpdateService {
 
     private final AddressRepository addressRepository;
 
-    public AddressListDTO execute(UUID addressId, AddressCreateDTO dto) {
+    public AddressListDTO execute(UUID userId, UUID addressId, AddressCreateDTO dto) {
 
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
 
-        UUID userId = address.getUser().getId();
+        if (!address.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Endereço não pertence ao usuário");
+        }
 
         if (!address.getNickname().equals(dto.getNickname()) &&
                 addressRepository.existsByUserIdAndNickname(userId, dto.getNickname())) {
@@ -38,10 +39,6 @@ public class AddressUpdateService {
 
         addressRepository.save(address);
 
-        return toListDTO(address);
-    }
-
-    private AddressListDTO toListDTO(Address address) {
         return AddressListDTO.builder()
                 .id(address.getId())
                 .nickname(address.getNickname())
