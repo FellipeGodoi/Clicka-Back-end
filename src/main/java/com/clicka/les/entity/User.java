@@ -3,6 +3,7 @@ package com.clicka.les.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import com.clicka.les.entity.base.BaseEntity;
@@ -21,6 +22,9 @@ public class User extends BaseEntity{
     private UUID id;
 
     private String name;
+
+    @Builder.Default
+    private BigDecimal credit = BigDecimal.ZERO;
 
     @Column(unique = true)
     private String cpf;

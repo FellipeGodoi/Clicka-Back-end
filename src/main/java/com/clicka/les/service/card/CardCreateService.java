@@ -7,7 +7,6 @@ import com.clicka.les.repository.user.CardRepository;
 import com.clicka.les.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -38,10 +37,6 @@ public class CardCreateService {
 
         cardRepository.save(card);
 
-        return toListDTO(card);
-    }
-
-    private CardListDTO toListDTO(Card card) {
         return CardListDTO.builder()
                 .id(card.getId())
                 .cardNumber(card.getCardNumber())

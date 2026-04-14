@@ -16,19 +16,19 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PhoneCreateController {
 
-    private final PhoneCreateService phoneCreateService;
-
-    @PostMapping
-    public ResponseEntity<?> create(
-            @PathVariable UUID userId,
-            @RequestBody @Valid PhoneCreateDTO dto
-    ) {
-        try {
-            return ResponseEntity.ok(
-                    phoneCreateService.execute(userId, dto)
-            );
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+//    private final PhoneCreateService phoneCreateService;
+//
+//    @PostMapping
+//    public ResponseEntity<?> create(
+//            @PathVariable UUID userId,
+//            @RequestBody @Valid PhoneCreateDTO dto
+//    ) {
+//        try {
+//            return ResponseEntity.ok(
+//                    phoneCreateService.execute(userId, dto)
+//            );
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
 }

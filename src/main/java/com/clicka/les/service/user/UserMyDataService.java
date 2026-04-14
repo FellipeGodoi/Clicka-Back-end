@@ -25,6 +25,7 @@ public class UserMyDataService {
         return UserMyDataResponseDTO.builder()
                 .id(user.getId())
                 .name(user.getName())
+                .credit(user.getCredit())
                 .cpf(user.getCpf())
                 .email(user.getEmail())
                 .isActive(user.getIsActive())
