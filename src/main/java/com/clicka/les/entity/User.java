@@ -1,5 +1,6 @@
 package com.clicka.les.entity;
 
+import com.clicka.les.entity.order.Order;
 import jakarta.persistence.*;
 import lombok.*;
 
