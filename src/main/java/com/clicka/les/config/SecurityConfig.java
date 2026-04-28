@@ -28,10 +28,13 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/coupons/**").permitAll()
+                        .requestMatchers("/public/**").permitAll()
                         .requestMatchers("/temp/**").permitAll()
                         .requestMatchers("/products/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/my-data/**").authenticated()
+                        .requestMatchers("/shipping/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

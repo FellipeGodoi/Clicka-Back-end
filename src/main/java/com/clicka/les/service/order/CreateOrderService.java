@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -70,7 +71,7 @@ public class CreateOrderService {
 
             int qty = itemDTO.getQuantity();
 
-            String batchCode = resolveBatchCode(product, qty);
+            Batch batch = resolveAndReserveBatch(product, qty);
 
             OrderItem item = OrderItem.builder()
                     .order(order)
@@ -80,7 +81,7 @@ public class CreateOrderService {
                     .unitPrice(price)
                     .quantity(qty)
                     .subtotal(price.multiply(BigDecimal.valueOf(qty)))
-                    .batchCode(batchCode)
+                    .batchCode(batch.getCode())
                     .build();
 
             items.add(item);
@@ -94,6 +95,9 @@ public class CreateOrderService {
 
         String state = address.getState();
         BigDecimal shipping = shippingService.calculate(state, totalItems);
+
+        LocalDate estimatedDate = shippingService.estimateDelivery(state);
+        order.setEstimatedDeliveryDate(estimatedDate);
 
         BigDecimal discount = dto.getCouponCode() != null
                 ? couponService.apply(dto.getCouponCode(), subtotal)
@@ -152,6 +156,20 @@ public class CreateOrderService {
         for (Batch batch : product.getBatches()) {
             if (batch.getAvailableQuantity() >= quantity) {
                 return batch.getCode();
+            }
+        }
+
+        throw new RuntimeException("Sem estoque em lote suficiente");
+    }
+
+    private Batch resolveAndReserveBatch(Product product, int quantity) {
+
+        for (Batch batch : product.getBatches()) {
+            if (batch.getAvailableQuantity() >= quantity) {
+
+                batch.reserve(quantity);
+
+                return batch;
             }
         }
 

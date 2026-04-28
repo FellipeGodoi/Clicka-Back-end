@@ -3,28 +3,54 @@ package com.clicka.les.service.order;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Service
 public class ShippingService {
 
     public BigDecimal calculate(String state, int totalItems) {
 
-        return switch (state.toUpperCase()) {
+        BigDecimal base;
+        BigDecimal perItem;
 
-            case "SP" -> BigDecimal.valueOf(20)
-                    .add(BigDecimal.valueOf(5L * totalItems));
+        switch (state.toUpperCase()) {
+            case "SP" -> {
+                base = BigDecimal.valueOf(20);
+                perItem = BigDecimal.valueOf(5);
+            }
+            case "RJ" -> {
+                base = BigDecimal.valueOf(10);
+                perItem = BigDecimal.valueOf(15);
+            }
+            case "MG" -> {
+                base = BigDecimal.valueOf(15);
+                perItem = BigDecimal.valueOf(10);
+            }
+            case "ES" -> {
+                base = BigDecimal.valueOf(12);
+                perItem = BigDecimal.valueOf(8);
+            }
+            default -> {
+                base = BigDecimal.valueOf(25);
+                perItem = BigDecimal.valueOf(10);
+            }
+        }
 
-            case "RJ" -> BigDecimal.valueOf(10)
-                    .add(BigDecimal.valueOf(15L * totalItems));
+        return base.add(perItem.multiply(BigDecimal.valueOf(totalItems)));
+    }
 
-            case "MG" -> BigDecimal.valueOf(15)
-                    .add(BigDecimal.valueOf(10L * totalItems));
+    public LocalDate estimateDelivery(String state) {
 
-            case "ES" -> BigDecimal.valueOf(12)
-                    .add(BigDecimal.valueOf(8L * totalItems));
+        int daysToAdd;
 
-            default -> BigDecimal.valueOf(25)
-                    .add(BigDecimal.valueOf(10L * totalItems));
-        };
+        switch (state.toUpperCase()) {
+            case "SP" -> daysToAdd = 2;
+            case "RJ" -> daysToAdd = 3;
+            case "MG" -> daysToAdd = 4;
+            case "ES" -> daysToAdd = 5;
+            default -> daysToAdd = 7;
+        }
+
+        return LocalDate.now().plusDays(daysToAdd);
     }
 }

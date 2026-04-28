@@ -25,11 +25,25 @@ public class Batch extends BaseEntity {
 
     private Integer quantityReceived;
 
-    private Integer quantitySold;
+    @Column(name = "quantity_sold")
+    private Integer quantitySold = 0;
 
     private LocalDateTime receivedAt;
 
     public Integer getAvailableQuantity() {
         return quantityReceived - (quantitySold != null ? quantitySold : 0);
+    }
+
+    public void reserve(int quantity) {
+
+        if (getAvailableQuantity() < quantity) {
+            throw new RuntimeException("Estoque insuficiente no lote");
+        }
+
+        if (this.quantitySold == null) {
+            this.quantitySold = 0;
+        }
+
+        this.quantitySold += quantity;
     }
 }
