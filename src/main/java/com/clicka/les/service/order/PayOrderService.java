@@ -61,7 +61,7 @@ public class PayOrderService {
             throw new RuntimeException("Pagamento insuficiente");
         }
 
-        order.setStatus(OrderStatus.APPROVED);
+        order.setStatus(OrderStatus.AWAITING_APPROVAL);
 
         return orderRepository.save(order);
     }

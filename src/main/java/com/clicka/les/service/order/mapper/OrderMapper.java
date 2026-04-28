@@ -31,6 +31,10 @@ public class OrderMapper {
 
                 .address(toAddressDTO(order))
                 .phone(toPhoneDTO(order))
+                .estimatedDeliveryDate(order.getEstimatedDeliveryDate())
+                .deliveredAt(order.getDeliveredAt())
+                .createdAt(order.getCreatedAt())
+                .updatedAt(order.getUpdatedAt())
                 .build();
     }
 
