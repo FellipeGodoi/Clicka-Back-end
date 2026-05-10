@@ -7,5 +7,12 @@ public enum OrderStatus {
     APPROVED,
     SHIPPED,
     DELIVERED,
-    CANCELLED
+    REFUSED_PAYMENT,
+    CANCELLED;
+
+    public boolean canBeCancelled() {
+        return this == CREATED
+                || this == AWAITING_PAYMENT
+                || this == AWAITING_APPROVAL;
+    }
 }

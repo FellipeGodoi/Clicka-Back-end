@@ -143,6 +143,12 @@ public class CreateOrderService {
         order.setDiscountAmount(discount);
         order.setFinalAmount(finalAmount);
 
+        if (finalAmount.compareTo(BigDecimal.ZERO) == 0) {
+            order.setStatus(OrderStatus.AWAITING_APPROVAL);
+        } else {
+            order.setStatus(OrderStatus.AWAITING_PAYMENT);
+        }
+
         order.setAddress(OrderAddress.from(address, order));
         order.setPhone(OrderPhone.from(phone, order));
 

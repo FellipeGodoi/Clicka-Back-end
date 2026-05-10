@@ -28,6 +28,9 @@ public class Batch extends BaseEntity {
     @Column(name = "quantity_sold")
     private Integer quantitySold = 0;
 
+    @Column(name = "quantity_reserved")
+    private Integer quantityReserved = 0;
+
     private LocalDateTime receivedAt;
 
     public Integer getAvailableQuantity() {
