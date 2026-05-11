@@ -1,13 +1,17 @@
 package com.clicka.les.entity.enums;
 
 public enum OrderStatus {
+
     CREATED,
     AWAITING_PAYMENT,
     AWAITING_APPROVAL,
+
     APPROVED,
+    REFUSED_PAYMENT,
+
     SHIPPED,
     DELIVERED,
-    REFUSED_PAYMENT,
+
     CANCELLED;
 
     public boolean canBeCancelled() {

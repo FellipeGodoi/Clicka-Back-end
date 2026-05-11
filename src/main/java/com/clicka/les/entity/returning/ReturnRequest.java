@@ -26,6 +26,9 @@ public class ReturnRequest extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ReturnStatus status;
 
+    @Column(columnDefinition = "TEXT")
+    private String rejectionReason;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
