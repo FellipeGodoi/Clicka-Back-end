@@ -16,6 +16,7 @@ import java.util.UUID;
 public class OrderPaymentController {
 
     private final PayOrderService payOrderService;
+    private final OrderMapper orderMapper;
 
     @PostMapping("/{orderId}/pay")
     public OrderResponseDTO pay(
@@ -25,6 +26,6 @@ public class OrderPaymentController {
 
         Order order = payOrderService.process(orderId, dto);
 
-        return OrderMapper.toDTO(order);
+        return orderMapper.toDTO(order);
     }
 }

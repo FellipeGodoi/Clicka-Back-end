@@ -15,19 +15,26 @@ import java.util.UUID;
 public class GetUserOrdersService {
 
     private final OrderRepository orderRepository;
+    private final OrderMapper orderMapper;
 
-    public List<OrderResponseDTO> get(UUID userId, OrderStatus status) {
+    public List<OrderResponseDTO> get(
+            UUID userId,
+            OrderStatus status
+    ) {
 
         if (status != null) {
-            return orderRepository.findByUserIdAndStatus(userId, status)
+
+            return orderRepository
+                    .findByUserIdAndStatus(userId, status)
                     .stream()
-                    .map(OrderMapper::toDTO)
+                    .map(orderMapper::toDTO)
                     .toList();
         }
 
-        return orderRepository.findByUserId(userId)
+        return orderRepository
+                .findByUserId(userId)
                 .stream()
-                .map(OrderMapper::toDTO)
+                .map(orderMapper::toDTO)
                 .toList();
     }
 }

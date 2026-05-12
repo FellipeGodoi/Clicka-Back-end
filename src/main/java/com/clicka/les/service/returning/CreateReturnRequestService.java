@@ -69,9 +69,14 @@ public class CreateReturnRequestService {
                         "Quantidade inválida"
                 );
             }
+            if (dto.getItems() == null || dto.getItems().isEmpty()) {
+                throw new BadRequestException(
+                        "Selecione ao menos um item"
+                );
+            }
 
             int alreadyReturned = returnItemRepository
-                    .findByOrderItemId(orderItemId)
+                    .findValidReturnsByOrderItemId(orderItemId)
                     .stream()
                     .mapToInt(ReturnItem::getQuantity)
                     .sum();

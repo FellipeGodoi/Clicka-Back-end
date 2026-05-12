@@ -39,20 +39,29 @@ public class CreateOrderService {
     private final AddressRepository addressRepository;
     private final PhoneRepository phoneRepository;
     private final UserRepository userRepository;
+    private final OrderMapper orderMapper;
 
     public OrderResponseDTO create(CreateOrderRequestDTO dto, User user) {
 
-        Address address = addressRepository.findById(UUID.fromString(dto.getAddressId()))
-                .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
+        Address address = addressRepository
+                .findById(UUID.fromString(dto.getAddressId()))
+                .orElseThrow(() ->
+                        new RuntimeException("Endereço não encontrado"));
 
-        Phone phone = phoneRepository.findById(UUID.fromString(dto.getPhoneId()))
-                .orElseThrow(() -> new RuntimeException("Telefone não encontrado"));
+        Phone phone = phoneRepository
+                .findById(UUID.fromString(dto.getPhoneId()))
+                .orElseThrow(() ->
+                        new RuntimeException("Telefone não encontrado"));
 
         Order order = Order.builder()
                 .user(user)
                 .status(OrderStatus.AWAITING_PAYMENT)
                 .couponCode(dto.getCouponCode())
-                .creditUsed(dto.getCreditToUse() != null ? dto.getCreditToUse() : BigDecimal.ZERO)
+                .creditUsed(
+                        dto.getCreditToUse() != null
+                                ? dto.getCreditToUse()
+                                : BigDecimal.ZERO
+                )
                 .build();
 
         BigDecimal subtotal = BigDecimal.ZERO;
@@ -62,12 +71,15 @@ public class CreateOrderService {
 
         for (CreateOrderItemDTO itemDTO : dto.getItems()) {
 
-            Product product = productRepository.findById(itemDTO.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+            Product product = productRepository
+                    .findById(itemDTO.getProductId())
+                    .orElseThrow(() ->
+                            new RuntimeException("Produto não encontrado"));
 
-            BigDecimal price = product.getPromotionalPrice() != null
-                    ? product.getPromotionalPrice()
-                    : product.getDefaultPrice();
+            BigDecimal price =
+                    product.getPromotionalPrice() != null
+                            ? product.getPromotionalPrice()
+                            : product.getDefaultPrice();
 
             int qty = itemDTO.getQuantity();
 
@@ -80,7 +92,9 @@ public class CreateOrderService {
                     .productType(product.getType())
                     .unitPrice(price)
                     .quantity(qty)
-                    .subtotal(price.multiply(BigDecimal.valueOf(qty)))
+                    .subtotal(
+                            price.multiply(BigDecimal.valueOf(qty))
+                    )
                     .batchCode(batch.getCode())
                     .build();
 
@@ -94,25 +108,32 @@ public class CreateOrderService {
         order.setTotalAmount(subtotal);
 
         String state = address.getState();
-        BigDecimal shipping = shippingService.calculate(state, totalItems);
 
-        LocalDate estimatedDate = shippingService.estimateDelivery(state);
+        BigDecimal shipping =
+                shippingService.calculate(state, totalItems);
+
+        LocalDate estimatedDate =
+                shippingService.estimateDelivery(state);
+
         order.setEstimatedDeliveryDate(estimatedDate);
 
-        BigDecimal discount = dto.getCouponCode() != null
-                ? couponService.apply(dto.getCouponCode(), subtotal)
-                : BigDecimal.ZERO;
+        BigDecimal discount =
+                dto.getCouponCode() != null
+                        ? couponService.apply(
+                        dto.getCouponCode(),
+                        subtotal
+                )
+                        : BigDecimal.ZERO;
 
-        BigDecimal creditUsed = dto.getCreditToUse() != null
-                ? dto.getCreditToUse()
-                : BigDecimal.ZERO;
+        BigDecimal creditUsed =
+                dto.getCreditToUse() != null
+                        ? dto.getCreditToUse()
+                        : BigDecimal.ZERO;
 
-        User managedUser = userRepository.findById(user.getId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        creditUsed = dto.getCreditToUse() != null
-                ? dto.getCreditToUse()
-                : BigDecimal.ZERO;
+        User managedUser = userRepository
+                .findById(user.getId())
+                .orElseThrow(() ->
+                        new RuntimeException("Usuário não encontrado"));
 
         if (creditUsed.compareTo(BigDecimal.ZERO) > 0) {
 
@@ -120,12 +141,18 @@ public class CreateOrderService {
                 managedUser.setCredit(BigDecimal.ZERO);
             }
 
-            if (managedUser.getCredit().compareTo(creditUsed) < 0) {
-                throw new RuntimeException("Crédito insuficiente");
+            if (
+                    managedUser.getCredit()
+                            .compareTo(creditUsed) < 0
+            ) {
+                throw new RuntimeException(
+                        "Crédito insuficiente"
+                );
             }
 
             managedUser.setCredit(
-                    managedUser.getCredit().subtract(creditUsed)
+                    managedUser.getCredit()
+                            .subtract(creditUsed)
             );
 
             userRepository.save(managedUser);
@@ -149,29 +176,50 @@ public class CreateOrderService {
             order.setStatus(OrderStatus.AWAITING_PAYMENT);
         }
 
-        order.setAddress(OrderAddress.from(address, order));
-        order.setPhone(OrderPhone.from(phone, order));
+        order.setAddress(
+                OrderAddress.from(address, order)
+        );
+
+        order.setPhone(
+                OrderPhone.from(phone, order)
+        );
 
         Order saved = orderRepository.save(order);
 
-        return OrderMapper.toDTO(saved);
+        return orderMapper.toDTO(saved);
     }
 
-    private String resolveBatchCode(Product product, int quantity) {
+    private String resolveBatchCode(
+            Product product,
+            int quantity
+    ) {
 
         for (Batch batch : product.getBatches()) {
-            if (batch.getAvailableQuantity() >= quantity) {
+
+            if (
+                    batch.getAvailableQuantity()
+                            >= quantity
+            ) {
                 return batch.getCode();
             }
         }
 
-        throw new RuntimeException("Sem estoque em lote suficiente");
+        throw new RuntimeException(
+                "Sem estoque em lote suficiente"
+        );
     }
 
-    private Batch resolveAndReserveBatch(Product product, int quantity) {
+    private Batch resolveAndReserveBatch(
+            Product product,
+            int quantity
+    ) {
 
         for (Batch batch : product.getBatches()) {
-            if (batch.getAvailableQuantity() >= quantity) {
+
+            if (
+                    batch.getAvailableQuantity()
+                            >= quantity
+            ) {
 
                 batch.reserve(quantity);
 
@@ -179,6 +227,8 @@ public class CreateOrderService {
             }
         }
 
-        throw new RuntimeException("Sem estoque em lote suficiente");
+        throw new RuntimeException(
+                "Sem estoque em lote suficiente"
+        );
     }
 }

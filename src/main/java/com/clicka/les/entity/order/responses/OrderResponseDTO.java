@@ -34,4 +34,6 @@ public class OrderResponseDTO {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    private Boolean canReturn;
 }

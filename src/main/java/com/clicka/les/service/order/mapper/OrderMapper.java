@@ -1,15 +1,23 @@
 package com.clicka.les.service.order.mapper;
 
+import com.clicka.les.entity.enums.ReturnStatus;
 import com.clicka.les.entity.order.Order;
 import com.clicka.les.entity.order.OrderItem;
 import com.clicka.les.entity.order.responses.*;
+import com.clicka.les.entity.returning.ReturnItem;
+import com.clicka.les.repository.returning.ReturnItemRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+@Component
+@RequiredArgsConstructor
 public class OrderMapper {
 
-    public static OrderResponseDTO toDTO(Order order) {
+    private final ReturnItemRepository returnItemRepository;
+
+    public OrderResponseDTO toDTO(Order order) {
 
         return OrderResponseDTO.builder()
                 .id(order.getId().toString())
@@ -25,21 +33,35 @@ public class OrderMapper {
                                 ? List.of()
                                 : order.getItems()
                                 .stream()
-                                .map(OrderMapper::toItemDTO)
-                                .collect(Collectors.toList())
+                                .map(this::toItemDTO)
+                                .toList()
                 )
 
                 .address(toAddressDTO(order))
                 .phone(toPhoneDTO(order))
+
                 .estimatedDeliveryDate(order.getEstimatedDeliveryDate())
                 .deliveredAt(order.getDeliveredAt())
+
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
+
                 .build();
     }
 
-    private static OrderItemDTO toItemDTO(OrderItem item) {
+    private OrderItemDTO toItemDTO(OrderItem item) {
+
+        int alreadyReturned = returnItemRepository
+                .findValidReturnsByOrderItemId(item.getId())
+                .stream()
+                .mapToInt(ReturnItem::getQuantity)
+                .sum();
+
+        int available =
+                item.getQuantity() - alreadyReturned;
+
         return OrderItemDTO.builder()
+                .id(item.getId().toString())
                 .productId(item.getProductId())
                 .productName(item.getProductName())
                 .productType(item.getProductType())
@@ -47,11 +69,21 @@ public class OrderMapper {
                 .unitPrice(item.getUnitPrice())
                 .quantity(item.getQuantity())
                 .subtotal(item.getSubtotal())
+
+                .availableReturnQuantity(
+                        Math.max(available, 0)
+                )
+
+                .canReturn(available > 0)
+
                 .build();
     }
 
-    private static OrderAddressDTO toAddressDTO(Order order) {
-        if (order.getAddress() == null) return null;
+    private OrderAddressDTO toAddressDTO(Order order) {
+
+        if (order.getAddress() == null) {
+            return null;
+        }
 
         return OrderAddressDTO.builder()
                 .nickname(order.getAddress().getNickname())
@@ -64,8 +96,11 @@ public class OrderMapper {
                 .build();
     }
 
-    private static OrderPhoneDTO toPhoneDTO(Order order) {
-        if (order.getPhone() == null) return null;
+    private OrderPhoneDTO toPhoneDTO(Order order) {
+
+        if (order.getPhone() == null) {
+            return null;
+        }
 
         return OrderPhoneDTO.builder()
                 .number(order.getPhone().getNumber())

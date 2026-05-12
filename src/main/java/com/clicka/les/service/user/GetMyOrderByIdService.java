@@ -14,16 +14,25 @@ import java.util.UUID;
 public class GetMyOrderByIdService {
 
     private final OrderRepository orderRepository;
+    private final OrderMapper orderMapper;
 
-    public OrderResponseDTO execute(UUID orderId, UUID userId) {
+    public OrderResponseDTO execute(
+            UUID orderId,
+            UUID userId
+    ) {
 
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Pedido não encontrado"
+                        ));
 
         if (!order.getUser().getId().equals(userId)) {
-            throw new RuntimeException("Acesso negado a este pedido");
+            throw new RuntimeException(
+                    "Acesso negado a este pedido"
+            );
         }
 
-        return OrderMapper.toDTO(order);
+        return orderMapper.toDTO(order);
     }
 }

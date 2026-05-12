@@ -1,4 +1,5 @@
 package com.clicka.les.service.admin.orders;
+
 import com.clicka.les.entity.enums.OrderStatus;
 import com.clicka.les.entity.order.responses.OrderResponseDTO;
 import com.clicka.les.repository.user.OrderRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class GetAllOrdersService {
 
     private final OrderRepository orderRepository;
+    private final OrderMapper orderMapper;
 
     public Page<OrderResponseDTO> get(
             OrderStatus status,
@@ -34,12 +36,12 @@ public class GetAllOrdersService {
                                 status,
                                 pageable
                         )
-                        .map(OrderMapper::toDTO);
+                        .map(orderMapper::toDTO);
             }
 
             return orderRepository
                     .searchOrders(search, pageable)
-                    .map(OrderMapper::toDTO);
+                    .map(orderMapper::toDTO);
         }
 
         if (status != null) {
@@ -49,11 +51,11 @@ public class GetAllOrdersService {
                             status,
                             pageable
                     )
-                    .map(OrderMapper::toDTO);
+                    .map(orderMapper::toDTO);
         }
 
         return orderRepository
                 .findAllByOrderByCreatedAtDesc(pageable)
-                .map(OrderMapper::toDTO);
+                .map(orderMapper::toDTO);
     }
 }
