@@ -30,6 +30,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/coupons/**").permitAll()
                         .requestMatchers("/public/**").permitAll()
+                        .requestMatchers("/users/**").permitAll()
                         .requestMatchers("/temp/**").permitAll()
                         .requestMatchers("/products/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
