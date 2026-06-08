@@ -23,13 +23,13 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
             ON oi.order_id = o.id
         WHERE
             oi.product_id IN (:products)
-            AND o.created_at BETWEEN :startDate AND :endDate
+            AND o.created_at >= :startDate
+            AND o.created_at < :endDate
         GROUP BY
             CAST(o.created_at AS DATE),
             oi.product_id,
             oi.product_name
-        ORDER BY
-            period
+        ORDER BY period
         """, nativeQuery = true)
     List<Object[]> salesByDay(
             @Param("products") List<String> products,
@@ -49,13 +49,13 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
             ON oi.order_id = o.id
         WHERE
             oi.product_id IN (:products)
-            AND o.created_at BETWEEN :startDate AND :endDate
+            AND o.created_at >= :startDate
+            AND o.created_at < :endDate
         GROUP BY
             TO_CHAR(o.created_at, 'YYYY-MM'),
             oi.product_id,
             oi.product_name
-        ORDER BY
-            period
+        ORDER BY period
         """, nativeQuery = true)
     List<Object[]> salesByMonth(
             @Param("products") List<String> products,
