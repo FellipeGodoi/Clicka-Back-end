@@ -62,4 +62,54 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+
+    //-------------------------
+    @Query(value = """
+    SELECT
+        CAST(o.created_at AS DATE) AS period,
+        oi.product_type,
+        SUM(oi.quantity) AS quantity_sold,
+        SUM(oi.subtotal) / NULLIF(SUM(oi.quantity), 0) AS average_price
+    FROM order_items oi
+    INNER JOIN orders o
+        ON oi.order_id = o.id
+    WHERE
+        oi.product_type IN (:categories)
+        AND o.created_at >= :startDate
+        AND o.created_at < :endDate
+    GROUP BY
+        CAST(o.created_at AS DATE),
+        oi.product_type
+    ORDER BY period
+    """, nativeQuery = true)
+    List<Object[]> categorySalesByDay(
+            @Param("categories") List<String> categories,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+
+    @Query(value = """
+    SELECT
+        TO_CHAR(o.created_at, 'YYYY-MM') AS period,
+        oi.product_type,
+        SUM(oi.quantity) AS quantity_sold,
+        SUM(oi.subtotal) / NULLIF(SUM(oi.quantity), 0) AS average_price
+    FROM order_items oi
+    INNER JOIN orders o
+        ON oi.order_id = o.id
+    WHERE
+        oi.product_type IN (:categories)
+        AND o.created_at >= :startDate
+        AND o.created_at < :endDate
+    GROUP BY
+        TO_CHAR(o.created_at, 'YYYY-MM'),
+        oi.product_type
+    ORDER BY period
+    """, nativeQuery = true)
+    List<Object[]> categorySalesByMonth(
+            @Param("categories") List<String> categories,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 }

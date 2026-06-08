@@ -1,7 +1,9 @@
 package com.clicka.les.controller.admin.dashboard;
 
+import com.clicka.les.dto.dashboard.CategorySalesReportRequest;
 import com.clicka.les.dto.dashboard.SalesReportRequest;
 import com.clicka.les.dto.dashboard.SalesReportResponse;
+import com.clicka.les.service.admin.dashboard.CategoryDashboardService;
 import com.clicka.les.service.admin.dashboard.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import java.util.List;
 public class DashboardController {
 
     private final DashboardService dashboardService;
+    private final CategoryDashboardService categoryDashboardService;
 
     @PostMapping("/sales")
     public ResponseEntity<List<SalesReportResponse>> getSalesReport(
@@ -28,5 +31,14 @@ public class DashboardController {
                 dashboardService.salesReport(request);
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/category-sales-report")
+    public ResponseEntity<?> categorySalesReport(
+            @RequestBody CategorySalesReportRequest request
+    ) {
+        return ResponseEntity.ok(
+                categoryDashboardService.salesReport(request)
+        );
     }
 }
