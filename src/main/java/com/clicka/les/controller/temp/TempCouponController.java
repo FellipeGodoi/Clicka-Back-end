@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/temp")
@@ -20,7 +21,18 @@ public class TempCouponController {
     public String createCoupons() {
 
         if (couponRepository.count() > 0) {
-            return "Cupons já cadastrados";
+
+            List<Coupon> coupons = couponRepository.findAll();
+
+            coupons.forEach(coupon ->
+                    coupon.setExpirationDate(
+                            coupon.getExpirationDate().plusDays(30)
+                    )
+            );
+
+            couponRepository.saveAll(coupons);
+
+            return "Validade de todos os cupons estendida em 30 dias";
         }
 
         Coupon c1 = Coupon.builder()
