@@ -214,21 +214,42 @@ public class CreateOrderService {
             int quantity
     ) {
 
+        int available = product.getBatches()
+                .stream()
+                .mapToInt(Batch::getAvailableQuantity)
+                .sum();
+
+        if (available < quantity) {
+            throw new RuntimeException(
+                    "Sem estoque suficiente"
+            );
+        }
+
+        int remaining = quantity;
+        Batch firstBatchUsed = null;
+
         for (Batch batch : product.getBatches()) {
 
-            if (
-                    batch.getAvailableQuantity()
-                            >= quantity
-            ) {
+            if (remaining <= 0) {
+                break;
+            }
 
-                batch.reserve(quantity);
+            int reserve = Math.min(
+                    batch.getAvailableQuantity(),
+                    remaining
+            );
 
-                return batch;
+            if (reserve > 0) {
+
+                if (firstBatchUsed == null) {
+                    firstBatchUsed = batch;
+                }
+
+                batch.reserve(reserve);
+                remaining -= reserve;
             }
         }
 
-        throw new RuntimeException(
-                "Sem estoque em lote suficiente"
-        );
+        return firstBatchUsed;
     }
 }
